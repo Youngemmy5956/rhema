@@ -1,0 +1,13 @@
+{
+  "name": "rhema",
+  "version": "0.1.0",
+  "description": "A timely word from Scripture, in your terminal",
+  "bin": {
+    "rhema": "./bin/rhema.js"
+  },
+  "type": "module",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  }
+}

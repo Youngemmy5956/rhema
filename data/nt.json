@@ -1,0 +1,88 @@
+[
+    {
+        "book": "Matthew",
+        "chapter": 5,
+        "verse": 14,
+        "text": "You are the light of the world. A town built on a hill cannot be hidden.",
+        "tags": [
+            "encouragement",
+            "light",
+            "faith"
+        ]
+    },
+    {
+        "book": "Philippians",
+        "chapter": 4,
+        "verse": 6,
+        "text": "Do not be anxious about anything, but in everything by prayer and supplication with thanksgiving let your requests be made known to God.",
+        "tags": [
+            "peace",
+            "trust",
+            "prayer"
+        ]
+    },
+    {
+        "book": "John",
+        "chapter": 3,
+        "verse": 16,
+        "text": "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.",
+        "tags": [
+            "love",
+            "faith",
+            "salvation"
+        ]
+    },
+    {
+        "book": "Romans",
+        "chapter": 8,
+        "verse": 28,
+        "text": "And we know that in all things God works for the good of those who love him, who have been called according to his purpose.",
+        "tags": [
+            "trust",
+            "faith",
+            "guidance"
+        ]
+    },
+    {
+        "book": "Psalm",
+        "chapter": 46,
+        "verse": 10,
+        "text": "Be still, and know that I am God.",
+        "tags": [
+            "peace",
+            "trust",
+            "stillness"
+        ]
+    },
+    {
+        "book": "Proverbs",
+        "chapter": 3,
+        "verse": 5,
+        "text": "Trust in the LORD with all your heart and lean not on your own understanding.",
+        "tags": [
+            "trust",
+            "faith",
+            "guidance"
+        ]
+    },
+    {
+        "book": "James",
+        "chapter": 1,
+        "verse": 5,
+        "text": "If any of you lacks wisdom, you should ask God, who gives generously to all without finding fault.",
+        "tags": [
+            "guidance",
+            "wisdom"
+        ]
+    },
+    {
+        "book": "1 Corinthians",
+        "chapter": 13,
+        "verse": 4,
+        "text": "Love is patient, love is kind. It does not envy, it does not boast, it is not proud.",
+        "tags": [
+            "love",
+            "encouragement"
+        ]
+    }
+]

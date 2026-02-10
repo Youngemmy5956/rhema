@@ -1,0 +1,77 @@
+[
+    {
+        "book": "Genesis",
+        "chapter": 1,
+        "verse": 1,
+        "text": "In the beginning God created the heavens and the earth.",
+        "tags": [
+            "creation",
+            "faith"
+        ]
+    },
+    {
+        "book": "Psalm",
+        "chapter": 23,
+        "verse": 1,
+        "text": "The Lord is my shepherd; I shall not want.",
+        "tags": [
+            "comfort",
+            "trust",
+            "provision"
+        ]
+    },
+    {
+        "book": "Isaiah",
+        "chapter": 41,
+        "verse": 10,
+        "text": "So do not fear, for I am with you; do not be dismayed, for I am your God.",
+        "tags": [
+            "fearless",
+            "strength",
+            "encouragement"
+        ]
+    },
+    {
+        "book": "Proverbs",
+        "chapter": 16,
+        "verse": 3,
+        "text": "Commit to the Lord whatever you do, and he will establish your plans.",
+        "tags": [
+            "guidance",
+            "planning",
+            "faith"
+        ]
+    },
+    {
+        "book": "Joshua",
+        "chapter": 1,
+        "verse": 9,
+        "text": "Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go.",
+        "tags": [
+            "strength",
+            "courage",
+            "faith"
+        ]
+    },
+    {
+        "book": "Psalm",
+        "chapter": 34,
+        "verse": 18,
+        "text": "The Lord is close to the brokenhearted and saves those who are crushed in spirit.",
+        "tags": [
+            "comfort",
+            "encouragement"
+        ]
+    },
+    {
+        "book": "Isaiah",
+        "chapter": 40,
+        "verse": 31,
+        "text": "But those who hope in the Lord will renew their strength. They will soar on wings like eagles.",
+        "tags": [
+            "strength",
+            "hope",
+            "faith"
+        ]
+    }
+]
