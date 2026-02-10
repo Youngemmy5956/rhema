@@ -28,6 +28,12 @@ npm install -g rhema-daily
 
 That's it! Daily Bible verse notifications are automatically set up! 🎉
 
+### Platform Support
+
+- ✅ **macOS** - Fully supported with daily notifications
+- ⚠️ **Windows** - Experimental (testers needed! [See issue #1](../../issues/1))
+- 🔜 **Linux** - Coming soon
+
 ---
 
 ## 📱 Usage
@@ -93,7 +99,7 @@ No one comes to the Father except through me."
 
 ## ⚙️ Configuration
 
-### Change Notification Time
+### macOS - Change Notification Time
 
 Edit the plist file:
 ```bash
@@ -112,9 +118,16 @@ launchctl unload ~/Library/LaunchAgents/com.rhema.daily.plist
 launchctl load ~/Library/LaunchAgents/com.rhema.daily.plist
 ```
 
+### Windows - Check Scheduled Task
+```powershell
+schtasks /query /tn "RhemaDaily"
+```
+
 ---
 
 ## 🗑️ Uninstall
+
+### macOS
 ```bash
 # Uninstall the package
 npm uninstall -g rhema-daily
@@ -125,24 +138,50 @@ rm ~/Library/LaunchAgents/com.rhema.daily.plist
 rm ~/rhema-daily.sh
 ```
 
+### Windows
+```powershell
+# Uninstall the package
+npm uninstall -g rhema-daily
+
+# Remove scheduled task
+schtasks /delete /tn "RhemaDaily" /f
+del %USERPROFILE%\rhema-daily.ps1
+```
+
 ---
 
 ## 🛠️ Requirements
 
-- macOS 10.14 or later
-- Node.js 18.0.0 or later
+- **macOS:** 10.14 or later
+- **Windows:** 10 or later (experimental)
+- **Node.js:** 18.0.0 or later
+
+---
+
+## 🧪 Help Test Windows Support!
+
+Windows support is **experimental** and needs testing! If you're on Windows:
+
+1. Install: `npm install -g rhema-daily`
+2. Test the CLI: `rhema daily`
+3. Check if notifications work
+4. [Report issues here](../../issues/1)
+
+Your feedback helps make RHEMA better for everyone! 🙏
 
 ---
 
 ## 🤝 Contributing
 
-Contributions, issues, and feature requests are welcome!
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
-1. Fork the project
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+**Immediate needs:**
+- Windows testing
+- Desktop app (Electron)
+- UI/UX design
+- Mobile app (React Native)
+
+See our [ROADMAP](ROADMAP.md) for the full vision.
 
 ---
 
@@ -152,7 +191,7 @@ This project is [MIT](LICENSE) licensed.
 
 ---
 
-## 👨‍�� Author
+## 👨‍💻 Author
 
 **Nwamini Emmanuel O.**
 

@@ -6,6 +6,29 @@ Thank you for your interest in contributing to RHEMA Daily! 🙏
 
 Make daily Bible verses accessible to everyone, regardless of technical skill level.
 
+---
+
+## 🚨 URGENT: Windows Testers Needed!
+
+**We need your help testing Windows support!**
+
+Windows functionality is currently **experimental**. If you have a Windows machine:
+
+1. Install: `npm install -g rhema-daily`
+2. Test the CLI commands
+3. Check if scheduled notifications work
+4. Report your findings in [Issue #1](../../issues/1)
+
+**What to test:**
+- [ ] Does `rhema daily` work?
+- [ ] Did the scheduled task get created?
+- [ ] Do notifications appear at 8 AM?
+- [ ] Are there any errors?
+
+Your testing is invaluable! 🙏
+
+---
+
 ## 🚀 Roadmap
 
 ### Phase 1: Core CLI (✅ Complete)
@@ -15,7 +38,7 @@ Make daily Bible verses accessible to everyone, regardless of technical skill le
 
 ### Phase 2: Cross-Platform Support (🚧 In Progress)
 - [x] macOS support
-- [ ] Windows support
+- [⚠️] Windows support (experimental - testers needed!)
 - [ ] Linux support
 
 ### Phase 3: Desktop App (📋 Planned)
@@ -29,6 +52,8 @@ Make daily Bible verses accessible to everyone, regardless of technical skill le
 - [ ] React Native mobile app (iOS/Android)
 - [ ] Widget support
 - [ ] Push notifications
+
+---
 
 ## 🛠️ How to Contribute
 
@@ -46,12 +71,14 @@ git checkout -b feature/your-feature-name
 
 ### 3. Make Your Changes
 
-#### Areas We Need Help:
+#### 🔥 Priority Areas:
 
-**Windows Support:**
-- Implement Windows Task Scheduler integration
-- Create Windows toast notifications
-- Test on various Windows versions
+**Windows Support (HIGH PRIORITY):**
+- Test installation on Windows 10/11
+- Fix Task Scheduler integration
+- Improve Windows toast notifications
+- Create Windows installer (.msi or .exe)
+- Document Windows-specific setup
 
 **Desktop App (Electron):**
 - Build Electron wrapper
@@ -81,6 +108,19 @@ git checkout -b feature/your-feature-name
 ```bash
 npm install -g .
 rhema
+rhema daily
+```
+
+**For Windows testing:**
+```powershell
+# Check if scheduled task was created
+schtasks /query /tn "RhemaDaily"
+
+# Check PowerShell script
+cat $env:USERPROFILE\rhema-daily.ps1
+
+# Test notification manually
+powershell -ExecutionPolicy Bypass -File "$env:USERPROFILE\rhema-daily.ps1"
 ```
 
 ### 5. Commit
@@ -104,12 +144,16 @@ git push origin feature/your-feature-name
 
 Then create a Pull Request on GitHub.
 
+---
+
 ## 📝 Code Style
 
 - Use ES modules
 - Follow existing code structure
 - Add comments for complex logic
 - Keep functions small and focused
+
+---
 
 ## 🐛 Reporting Bugs
 
@@ -118,6 +162,14 @@ Open an issue with:
 - Node.js version
 - Steps to reproduce
 - Expected vs actual behavior
+- Error messages (if any)
+
+**For Windows issues, please include:**
+- Windows version (10/11)
+- PowerShell version
+- Task Scheduler screenshot (if applicable)
+
+---
 
 ## 💡 Feature Requests
 
@@ -126,9 +178,34 @@ Open an issue describing:
 - Proposed solution
 - Why it benefits users
 
+---
+
+## 🧪 Testing Checklist
+
+Before submitting a PR, test:
+
+- [ ] `rhema` - Random verse works
+- [ ] `rhema daily` - Daily verse works
+- [ ] `rhema ot` - Old Testament filter works
+- [ ] `rhema red` - Red letter filter works
+- [ ] `rhema fetch John 3:16` - Fetch specific verse works
+- [ ] Notifications appear (if applicable)
+- [ ] No errors in console
+
+**Windows-specific:**
+- [ ] Scheduled task created
+- [ ] Notifications appear at set time
+- [ ] PowerShell script runs without errors
+
+---
+
 ## 📧 Questions?
 
-Open a discussion or contact [@Youngemmy5956](https://github.com/Youngemmy5956)
+- Open a [discussion](../../discussions)
+- Contact [@Youngemmy5956](https://github.com/Youngemmy5956)
+- Join our community (coming soon!)
+
+---
 
 ## 🙏 Thank You!
 
