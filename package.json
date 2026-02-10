@@ -1,6 +1,6 @@
 {
   "name": "rhema-daily",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Daily Bible verse notifications for your Mac - Get inspired every morning!",
   "main": "bin/rhema.js",
   "type": "module",
