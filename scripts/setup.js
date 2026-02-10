@@ -2,8 +2,12 @@
 
 import { execSync } from 'child_process';
 import { homedir, platform } from 'os';
-import { writeFileSync, mkdirSync, existsSync } from 'fs';
-import { join } from 'path';
+import { writeFileSync, mkdirSync, existsSync, readFileSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const HOME = homedir();
 const OS = platform();
@@ -81,34 +85,69 @@ echo "$VERSE"
 else if (OS === 'win32') {
   try {
     const taskName = 'RhemaDaily';
-    const scriptPath = join(HOME, 'rhema-daily.ps1');
     
-    // PowerShell script for Windows notifications
+    // Copy the notification script
+    const notifyScriptSource = join(__dirname, 'windows-notify.ps1');
+    const notifyScriptDest = join(HOME, 'rhema-notify.ps1');
+    
+    if (existsSync(notifyScriptSource)) {
+      const notifyScript = readFileSync(notifyScriptSource, 'utf-8');
+      writeFileSync(notifyScriptDest, notifyScript, 'utf-8');
+    }
+    
+    // Main daily script
+    const scriptPath = join(HOME, 'rhema-daily.ps1');
     const psScript = `# RHEMA Daily - Windows
-$verse = rhema daily
-$title = "📖 RHEMA Daily"
-$subtitle = "by Nwamini Emmanuel O."
+$ErrorActionPreference = "Continue"
 
-# Windows Toast Notification
-Add-Type -AssemblyName System.Windows.Forms
-$notification = New-Object System.Windows.Forms.NotifyIcon
-$notification.Icon = [System.Drawing.SystemIcons]::Information
-$notification.BalloonTipIcon = [System.Windows.Forms.ToolTipIcon]::Info
-$notification.BalloonTipTitle = $title
-$notification.BalloonTipText = $verse
-$notification.Visible = $true
-$notification.ShowBalloonTip(10000)
-
-# Also write to log
-$logPath = "$env:TEMP\\rhema-daily.log"
-Add-Content -Path $logPath -Value "$(Get-Date) - $verse"
+# Get the verse
+try {
+    $output = rhema daily 2>&1 | Out-String
+    $lines = $output -split "``n"
+    
+    # Extract verse and reference
+    $verse = ""
+    $reference = ""
+    
+    foreach ($line in $lines) {
+        if ($line -match '^"(.+)"$') {
+            $verse = $matches[1]
+        }
+        elseif ($line -match '^—\s*(.+)$') {
+            $reference = $matches[1]
+        }
+    }
+    
+    if ($verse -eq "") {
+        $verse = $output.Trim()
+    }
+    
+    # Call notification script
+    $notifyScript = "$env:USERPROFILE\\rhema-notify.ps1"
+    if (Test-Path $notifyScript) {
+        & $notifyScript -Verse $verse -Reference $reference
+    }
+    else {
+        Write-Host "📖 $verse" -ForegroundColor Cyan
+        Write-Host "— $reference" -ForegroundColor Gray
+    }
+}
+catch {
+    Write-Host "Error: $_" -ForegroundColor Red
+    $logPath = "$env:TEMP\\rhema-daily-error.log"
+    Add-Content -Path $logPath -Value "$(Get-Date) - Error: $_"
+}
 `;
 
     writeFileSync(scriptPath, psScript, 'utf-8');
 
-    // Create Windows Task Scheduler task
+    // Create Task Scheduler XML
     const taskXml = `<?xml version="1.0" encoding="UTF-16"?>
-<Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+<Task version="1.4" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+  <RegistrationInfo>
+    <Description>RHEMA Daily Bible Verse Notification</Description>
+    <Author>Nwamini Emmanuel O.</Author>
+  </RegistrationInfo>
   <Triggers>
     <CalendarTrigger>
       <StartBoundary>2025-01-01T08:00:00</StartBoundary>
@@ -118,10 +157,25 @@ Add-Content -Path $logPath -Value "$(Get-Date) - $verse"
       </ScheduleByDay>
     </CalendarTrigger>
   </Triggers>
+  <Settings>
+    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
+    <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
+    <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
+    <AllowHardTerminate>true</AllowHardTerminate>
+    <StartWhenAvailable>true</StartWhenAvailable>
+    <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>
+    <AllowStartOnDemand>true</AllowStartOnDemand>
+    <Enabled>true</Enabled>
+    <Hidden>false</Hidden>
+    <RunOnlyIfIdle>false</RunOnlyIfIdle>
+    <WakeToRun>false</WakeToRun>
+    <ExecutionTimeLimit>PT1H</ExecutionTimeLimit>
+    <Priority>7</Priority>
+  </Settings>
   <Actions>
     <Exec>
       <Command>powershell.exe</Command>
-      <Arguments>-ExecutionPolicy Bypass -File "${scriptPath}"</Arguments>
+      <Arguments>-WindowStyle Hidden -ExecutionPolicy Bypass -File "${scriptPath.replace(/\\/g, '\\\\')}"</Arguments>
     </Exec>
   </Actions>
 </Task>`;
@@ -130,10 +184,16 @@ Add-Content -Path $logPath -Value "$(Get-Date) - $verse"
     writeFileSync(taskXmlPath, taskXml, 'utf-16le');
 
     // Register the task
-    execSync(`schtasks /create /tn "${taskName}" /xml "${taskXmlPath}" /f`, { stdio: 'inherit' });
+    try {
+      execSync(`schtasks /delete /tn "${taskName}" /f`, { stdio: 'ignore' });
+    } catch (e) {}
+    
+    execSync(`schtasks /create /tn "${taskName}" /xml "${taskXmlPath}" /f`);
 
     console.log('✅ RHEMA Daily successfully set up on Windows!\n');
     console.log('📖 You will receive a Bible verse notification at 8:00 AM daily\n');
+    console.log('\n🧪 To test the notification now, run:');
+    console.log(`   powershell -ExecutionPolicy Bypass -File "${scriptPath}"\n`);
   } catch (error) {
     console.error('❌ Setup failed:', error.message);
     console.log('\n💡 You can still use the CLI commands!');
@@ -141,13 +201,8 @@ Add-Content -Path $logPath -Value "$(Get-Date) - $verse"
 }
 
 // Linux Setup (optional)
-else if (OS === 'linux') {
-  console.log('⚠️  Linux support coming soon!');
-  console.log('   You can still use the CLI commands!\n');
-}
-
 else {
-  console.log('⚠️  This package is currently supported on macOS and Windows.');
+  console.log('⚠️  Linux support coming soon!');
   console.log('   You can still use the CLI commands!\n');
 }
 
