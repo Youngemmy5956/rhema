@@ -5,7 +5,7 @@
   "main": "bin/rhema.js",
   "type": "module",
   "bin": {
-    "rhema": "./bin/rhema.js"
+    "rhema": "bin/rhema.js"
   },
   "scripts": {
     "postinstall": "node scripts/setup.js"
@@ -27,7 +27,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Youngemmy5956/rhema.git"
+    "url": "git+https://github.com/Youngemmy5956/rhema.git"
   },
   "bugs": {
     "url": "https://github.com/Youngemmy5956/rhema/issues"
