@@ -10,17 +10,7 @@
   "scripts": {
     "postinstall": "node scripts/setup.js"
   },
-  "keywords": [
-    "bible",
-    "verse",
-    "daily",
-    "notification",
-    "scripture",
-    "christian",
-    "devotional",
-    "macos",
-    "cli"
-  ],
+  "keywords": "bible,verse,daily,notification,scripture,christian,devotional,macos,cli,inspirational,faith",
   "author": {
     "name": "Nwamini Emmanuel O.",
     "url": "https://github.com/Youngemmy5956"
@@ -39,7 +29,5 @@
   },
   "os": [
     "darwin"
-  ],
-  "dependencies": {},
-  "devDependencies": {}
+  ]
 }
