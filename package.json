@@ -1,6 +1,6 @@
 {
   "name": "rhema-daily",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Daily Bible verse notifications for your Mac - Get inspired every morning!",
   "main": "bin/rhema.js",
   "type": "module",
@@ -39,5 +39,8 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "os": ["darwin","win32"]
+  "os": [
+    "darwin",
+    "win32"
+  ]
 }
