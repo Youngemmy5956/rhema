@@ -1,6 +1,13 @@
 #!/bin/bash
 
-echo "📖 Installing RHEMA Daily Verse..."
+echo "================================================"
+echo "📖 RHEMA - Daily Bible Verse"
+echo "   Created by Nwamini Emmanuel O."
+echo "   https://github.com/Youngemmy5956/rhema"
+echo "================================================"
+echo ""
+echo "Installing..."
+echo ""
 
 # Get the user's home directory
 USER_HOME="$HOME"
@@ -28,24 +35,24 @@ NODE_PATH=$(which node)
 
 # Create the daily script
 echo "📝 Creating daily script..."
-cat > "$USER_HOME/rhema-daily.sh" << SCRIPT
+cat > "$USER_HOME/rhema-daily.sh" << 'SCRIPT'
 #!/bin/bash
 
 # Load NVM
-export NVM_DIR="$USER_HOME/.nvm"
-[ -s "\$NVM_DIR/nvm.sh" ] && \. "\$NVM_DIR/nvm.sh"
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
 # Navigate to project directory
-cd $USER_HOME/rhema || exit 1
+cd $HOME/rhema || exit 1
 
 # Get the daily verse
-VERSE=\$(node bin/rhema.js daily)
+VERSE=$(node bin/rhema.js daily)
 
 # Display as notification
-osascript -e "display notification \"\$VERSE\" with title \"Daily Bible Verse ✝️\" sound name \"Glass\""
+osascript -e "display notification \"$VERSE\" with title \"📖 RHEMA Daily\" subtitle \"by Nwamini Emmanuel O.\" sound name \"Glass\""
 
 # Also log it
-echo "\$VERSE"
+echo "$VERSE"
 SCRIPT
 
 chmod +x "$USER_HOME/rhema-daily.sh"
@@ -95,10 +102,12 @@ echo ""
 echo "📖 Your daily Bible verse will appear at 8:00 AM every day"
 echo ""
 echo "Commands you can use:"
-echo "  rhema              - Get a random verse"
-echo "  rhema daily        - Get today's verse"
-echo "  rhema fetch John 3:16  - Get specific verse"
+echo "  node ~/rhema/bin/rhema.js           - Get a random verse"
+echo "  node ~/rhema/bin/rhema.js daily     - Get today's verse"
+echo "  node ~/rhema/bin/rhema.js fetch John 3:16  - Get specific verse"
 echo ""
 echo "To add 'rhema' command globally, add this to your ~/.zshrc:"
 echo "  alias rhema='node $USER_HOME/rhema/bin/rhema.js'"
+echo ""
+echo "⭐ Star the project: https://github.com/Youngemmy5956/rhema"
 echo ""

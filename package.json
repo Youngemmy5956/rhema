@@ -1,13 +1,38 @@
 {
-  "name": "rhema",
-  "version": "0.1.0",
-  "description": "A timely word from Scripture, in your terminal",
+  "name": "rhema-cli",
+  "version": "1.0.0",
+  "description": "Daily Bible verse notifications for your Mac - Get inspired every morning!",
+  "main": "bin/rhema.js",
+  "type": "module",
   "bin": {
     "rhema": "./bin/rhema.js"
   },
-  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "bible",
+    "verse",
+    "daily",
+    "notification",
+    "scripture",
+    "christian",
+    "devotional"
+  ],
+  "author": {
+    "name": "Nwamini Emmanuel O.",
+    "url": "https://github.com/Youngemmy5956"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Youngemmy5956/rhema.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Youngemmy5956/rhema/issues"
+  },
+  "homepage": "https://github.com/Youngemmy5956/rhema#readme",
   "license": "MIT",
   "dependencies": {
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^3.3.0"
   }
 }
