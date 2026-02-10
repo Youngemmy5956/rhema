@@ -1,5 +1,5 @@
 {
-  "name": "rhema-cli",
+  "name": "rhema-daily",
   "version": "1.0.0",
   "description": "Daily Bible verse notifications for your Mac - Get inspired every morning!",
   "main": "bin/rhema.js",
@@ -8,7 +8,7 @@
     "rhema": "./bin/rhema.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "postinstall": "node scripts/setup.js"
   },
   "keywords": [
     "bible",
@@ -17,7 +17,9 @@
     "notification",
     "scripture",
     "christian",
-    "devotional"
+    "devotional",
+    "macos",
+    "cli"
   ],
   "author": {
     "name": "Nwamini Emmanuel O.",
@@ -32,7 +34,12 @@
   },
   "homepage": "https://github.com/Youngemmy5956/rhema#readme",
   "license": "MIT",
-  "dependencies": {
-    "node-fetch": "^3.3.0"
-  }
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "os": [
+    "darwin"
+  ],
+  "dependencies": {},
+  "devDependencies": {}
 }
