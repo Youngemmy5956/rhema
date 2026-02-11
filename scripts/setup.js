@@ -99,8 +99,8 @@ echo "---" >> /tmp/rhema-daily.log
 
     try {
       execSync(`launchctl unload ${plistPath} 2>/dev/null`, { stdio: 'ignore' });
-    } catch (e) { }
-
+    } catch (e) {}
+    
     execSync(`launchctl load ${plistPath}`);
 
     console.log('✅ RHEMA Daily successfully set up on macOS!\n');
@@ -108,6 +108,17 @@ echo "---" >> /tmp/rhema-daily.log
     console.log('   🔔 Notification appears with verse preview');
     console.log('   📖 Popup dialog shows full verse to read');
     console.log('   ✝️  Click "Amen" to close or "Copy Verse" to copy\n');
+
+    // Show welcome notification
+    console.log('🔔 Showing welcome notification...\n');
+    try {
+      execSync(`${scriptPath}`, { stdio: 'inherit' });
+      console.log('\n✅ Welcome notification sent!');
+      console.log('📖 Your next daily verse will appear at 8:00 AM tomorrow\n');
+    } catch (e) {
+      console.log('⚠️  Could not show welcome notification, but setup is complete!\n');
+    }
+
   } catch (error) {
     console.error('❌ Setup failed:', error.message);
     console.log('\n💡 You can still use the CLI commands!');
@@ -118,16 +129,16 @@ echo "---" >> /tmp/rhema-daily.log
 else if (OS === 'win32') {
   try {
     const taskName = 'RhemaDaily';
-
+    
     // Copy the notification script if it exists
     const notifyScriptSource = join(__dirname, 'windows-notify.ps1');
     const notifyScriptDest = join(HOME, 'rhema-notify.ps1');
-
+    
     if (existsSync(notifyScriptSource)) {
       const notifyScript = readFileSync(notifyScriptSource, 'utf-8');
       writeFileSync(notifyScriptDest, notifyScript, 'utf-8');
     }
-
+    
     // Main daily script
     const scriptPath = join(HOME, 'rhema-daily.ps1');
     const psScript = `# RHEMA Daily - Windows
@@ -219,14 +230,25 @@ catch {
     // Register the task
     try {
       execSync(`schtasks /delete /tn "${taskName}" /f`, { stdio: 'ignore' });
-    } catch (e) { }
-
+    } catch (e) {}
+    
     execSync(`schtasks /create /tn "${taskName}" /xml "${taskXmlPath}" /f`);
 
     console.log('✅ RHEMA Daily successfully set up on Windows!\n');
     console.log('📖 You will receive a Bible verse notification at 8:00 AM daily\n');
-    console.log('\n🧪 To test the notification now, run:');
-    console.log(`   powershell -ExecutionPolicy Bypass -File "${scriptPath}"\n`);
+
+    // Show welcome notification
+    console.log('🔔 Showing welcome notification...\n');
+    try {
+      execSync(`powershell -ExecutionPolicy Bypass -File "${scriptPath}"`, { stdio: 'inherit' });
+      console.log('\n✅ Welcome notification sent!');
+      console.log('📖 Your next daily verse will appear at 8:00 AM tomorrow\n');
+    } catch (e) {
+      console.log('⚠️  Could not show welcome notification, but setup is complete!\n');
+      console.log('🧪 To test manually, run:');
+      console.log(`   powershell -ExecutionPolicy Bypass -File "${scriptPath}"\n`);
+    }
+
   } catch (error) {
     console.error('❌ Setup failed:', error.message);
     console.log('\n💡 You can still use the CLI commands!');
