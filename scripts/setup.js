@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { execSync } from 'child_process';
+import { execSync, spawn } from 'child_process';
 import { homedir, platform } from 'os';
 import { writeFileSync, mkdirSync, existsSync, readFileSync } from 'fs';
 import { join, dirname } from 'path';
@@ -105,29 +105,28 @@ echo "---" >> /tmp/rhema-daily.log
 
     console.log('✅ RHEMA Daily successfully set up on macOS!\n');
     
-    // Show welcome notification immediately!
-    try {
-      const welcomeVerse = execSync('rhema', { encoding: 'utf-8' });
-      const cleanVerse = welcomeVerse.replace(/\x1b\[[0-9;]*m/g, '');
-      const verseLines = cleanVerse.trim().split('\n');
-      const verseText = verseLines[0]?.replace(/^"|"$/g, '') || '';
-      const verseRef = verseLines[1]?.replace(/^— /, '') || '';
-      
-      // Welcome notification
-      execSync(`osascript -e 'display notification "Your daily verse will appear at 8:00 AM every morning!" with title "Welcome to RHEMA! 🙏" subtitle "by Nwamini Emmanuel O." sound name "Glass"'`);
-      
-      // Wait a second, then show sample verse
-      setTimeout(() => {
-        const welcomeMessage = `${verseText}\n\n— ${verseRef}\n\nYour daily verse will appear at 8:00 AM tomorrow! ✝️`;
-        
-        execSync(`osascript -e 'display dialog "${welcomeMessage.replace(/"/g, '\\"')}" with title "📖 RHEMA - Sample Verse" buttons {"Amen"} default button "Amen" with icon note'`);
-      }, 1500);
-      
-    } catch (e) {
-      console.log('💡 Test it now: rhema daily');
-    }
+    // Show welcome notification using spawn (non-blocking)
+    const welcomeScript = `#!/bin/bash
+sleep 1
+osascript -e 'display notification "Your daily verse will appear at 8:00 AM every morning! ✝️" with title "Welcome to RHEMA! 🙏" subtitle "by Nwamini Emmanuel O." sound name "Glass"'
+sleep 2
+VERSE=$(rhema | sed 's/\\x1b\\[[0-9;]*m//g')
+VERSE_TEXT=$(echo "$VERSE" | head -1 | sed 's/^"//;s/"$//')
+VERSE_REF=$(echo "$VERSE" | tail -1 | sed 's/^— //')
+osascript -e "display dialog \\"Sample Verse:\\n\\n$VERSE_TEXT\\n\\n— $VERSE_REF\\n\\nYour daily verse will appear at 8:00 AM tomorrow! ✝️\\" with title \\"📖 RHEMA\\" buttons {\\"Amen\\"} default button \\"Amen\\" with icon note"
+`;
     
-    console.log('\n📖 Daily verses will appear at 8:00 AM\n');
+    const welcomeScriptPath = '/tmp/rhema-welcome.sh';
+    writeFileSync(welcomeScriptPath, welcomeScript);
+    execSync(`chmod +x ${welcomeScriptPath}`);
+    
+    // Spawn in background without blocking
+    spawn(welcomeScriptPath, [], {
+      detached: true,
+      stdio: 'ignore'
+    }).unref();
+    
+    console.log('📖 Daily verses will appear at 8:00 AM\n');
     console.log('   🔔 Notification with verse preview');
     console.log('   📖 Popup dialog with full verse to read');
     console.log('   ✝️  Click "Amen" to close or "Copy Verse" to copy\n');
@@ -138,12 +137,11 @@ echo "---" >> /tmp/rhema-daily.log
   }
 }
 
-// Windows Setup
+// Windows Setup  
 else if (OS === 'win32') {
   try {
     const taskName = 'RhemaDaily';
     
-    // Copy the notification script if it exists
     const notifyScriptSource = join(__dirname, 'windows-notify.ps1');
     const notifyScriptDest = join(HOME, 'rhema-notify.ps1');
     
@@ -152,17 +150,14 @@ else if (OS === 'win32') {
       writeFileSync(notifyScriptDest, notifyScript, 'utf-8');
     }
     
-    // Main daily script
     const scriptPath = join(HOME, 'rhema-daily.ps1');
     const psScript = `# RHEMA Daily - Windows
 $ErrorActionPreference = "Continue"
 
-# Get the verse
 try {
     $output = rhema daily 2>&1 | Out-String
     $lines = $output -split "\`n"
     
-    # Extract verse and reference
     $verse = ""
     $reference = ""
     
@@ -179,7 +174,6 @@ try {
         $verse = $output.Trim()
     }
     
-    # Call notification script
     $notifyScript = "$env:USERPROFILE\\\\rhema-notify.ps1"
     if (Test-Path $notifyScript) {
         & $notifyScript -Verse $verse -Reference $reference
@@ -198,7 +192,6 @@ catch {
 
     writeFileSync(scriptPath, psScript, 'utf-8');
 
-    // Create Task Scheduler XML
     const taskXml = `<?xml version="1.0" encoding="UTF-16"?>
 <Task version="1.4" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
   <RegistrationInfo>
@@ -240,7 +233,6 @@ catch {
     const taskXmlPath = join(HOME, 'rhema-task.xml');
     writeFileSync(taskXmlPath, taskXml, 'utf-16le');
 
-    // Register the task
     try {
       execSync(`schtasks /delete /tn "${taskName}" /f`, { stdio: 'ignore' });
     } catch (e) {}
@@ -248,13 +240,6 @@ catch {
     execSync(`schtasks /create /tn "${taskName}" /xml "${taskXmlPath}" /f`);
 
     console.log('✅ RHEMA Daily successfully set up on Windows!\n');
-    
-    // Show welcome notification
-    try {
-      execSync('rhema', { encoding: 'utf-8', stdio: 'ignore' });
-      console.log('🎉 Welcome notification sent!\n');
-    } catch (e) {}
-    
     console.log('📖 You will receive a Bible verse notification at 8:00 AM daily\n');
     console.log('\n🧪 To test the notification now, run:');
     console.log(`   powershell -ExecutionPolicy Bypass -File "${scriptPath}"\n`);
@@ -265,7 +250,6 @@ catch {
   }
 }
 
-// Linux Setup
 else {
   console.log('⚠️  Linux support coming soon!');
   console.log('   You can still use the CLI commands!\n');
