@@ -1,6 +1,6 @@
 # 📖 RHEMA - Daily Bible Verse
 
-> Get inspired every morning with a Bible verse notification on your Mac!
+> Get inspired every morning with a Bible verse notification on your Mac and Windows!
 
 [![npm version](https://img.shields.io/npm/v/rhema-daily.svg)](https://www.npmjs.com/package/rhema-daily)
 [![npm downloads](https://img.shields.io/npm/dm/rhema-daily.svg)](https://www.npmjs.com/package/rhema-daily)
@@ -11,7 +11,7 @@ Created by **Nwamini Emmanuel O.** | [GitHub](https://github.com/Youngemmy5956)
 
 ---
 
-## 💡 What is RHEMA?
+## �� What is RHEMA?
 
 **RHEMA** (ῥῆμα) is a Greek word meaning **"a spoken word"** or **"utterance"**. In biblical context, it refers to a specific word from God that speaks directly to you in a particular moment - a timely, personal message that brings life and revelation.
 
@@ -30,8 +30,8 @@ That's it! Daily Bible verse notifications are automatically set up! 🎉
 
 ### Platform Support
 
-- ✅ **macOS** - Fully supported with daily notifications
-- ⚠️ **Windows** - Experimental (testers needed! [See issue #1](../../issues/1))
+- ✅ **macOS** - Fully supported with beautiful notifications and popup dialogs
+- ✅ **Windows** - Working! Task Scheduler notifications (help us test! [See issue #1](../../issues/1))
 - 🔜 **Linux** - Coming soon
 
 ---
@@ -66,14 +66,37 @@ rhema fetch "1 Corinthians" 13:4
 - ⚡ **Auto-start** - Runs automatically even after restarts
 - 🎯 **Filtered Verses** - Choose OT, NT, or Red Letter (Jesus's words)
 - 🏷️ **Mood-based** - Filter verses by themes (peace, comfort, rest, etc.)
+- 🎉 **Welcome Experience** - Sample verse on first install
+
+---
+
+## 🎯 What You'll See
+
+### macOS Experience
+
+**On Installation:**
+1. 🔔 Welcome notification
+2. 📖 Sample verse popup
+3. Message: "Your daily verse will appear at 8:00 AM tomorrow!"
+
+**Every Morning at 8 AM:**
+1. 🔔 Notification with verse preview
+2. 📖 Full verse popup dialog
+3. Two buttons: "Amen" or "Copy Verse"
+
+### Windows Experience
+
+**On Installation:**
+1. ✅ Task Scheduler setup
+2. PowerShell notification script created
+
+**Every Morning at 8 AM:**
+1. 🔔 Windows toast notification with verse
+2. Logged to `%TEMP%\rhema-daily.log`
 
 ---
 
 ## 🎯 Examples
-
-**Daily Notification:**
-
-Every morning at 8:00 AM, you'll receive a notification with a fresh word from Scripture.
 
 **Command Line:**
 ```bash
@@ -118,7 +141,35 @@ launchctl unload ~/Library/LaunchAgents/com.rhema.daily.plist
 launchctl load ~/Library/LaunchAgents/com.rhema.daily.plist
 ```
 
-### Windows - Check Scheduled Task
+### Windows - Change Notification Time
+
+Open Task Scheduler:
+```powershell
+taskschd.msc
+```
+
+Find "RhemaDaily" → Right-click → Properties → Triggers → Edit
+
+Or edit the PowerShell script directly:
+```powershell
+notepad $env:USERPROFILE\rhema-daily.ps1
+```
+
+---
+
+## 🧪 Testing
+
+### macOS - Test Immediately
+```bash
+~/rhema-daily.sh
+```
+
+### Windows - Test Immediately
+```powershell
+powershell -ExecutionPolicy Bypass -File "$env:USERPROFILE\rhema-daily.ps1"
+```
+
+Check scheduled task:
 ```powershell
 schtasks /query /tn "RhemaDaily"
 ```
@@ -145,7 +196,8 @@ npm uninstall -g rhema-daily
 
 # Remove scheduled task
 schtasks /delete /tn "RhemaDaily" /f
-del %USERPROFILE%\rhema-daily.ps1
+del $env:USERPROFILE\rhema-daily.ps1
+del $env:USERPROFILE\rhema-notify.ps1
 ```
 
 ---
@@ -153,19 +205,20 @@ del %USERPROFILE%\rhema-daily.ps1
 ## 🛠️ Requirements
 
 - **macOS:** 10.14 or later
-- **Windows:** 10 or later (experimental)
+- **Windows:** 10 or later
 - **Node.js:** 18.0.0 or later
 
 ---
 
 ## 🧪 Help Test Windows Support!
 
-Windows support is **experimental** and needs testing! If you're on Windows:
+Windows support is **working but needs more testing**! If you're on Windows:
 
 1. Install: `npm install -g rhema-daily`
 2. Test the CLI: `rhema daily`
-3. Check if notifications work
-4. [Report issues here](../../issues/1)
+3. Check if scheduled task was created
+4. Test notifications
+5. [Report your experience here](../../issues/1)
 
 Your feedback helps make RHEMA better for everyone! 🙏
 
@@ -175,11 +228,12 @@ Your feedback helps make RHEMA better for everyone! 🙏
 
 We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
-**Immediate needs:**
-- Windows testing
-- Desktop app (Electron)
-- UI/UX design
-- Mobile app (React Native)
+**Help wanted:**
+- ✅ Windows testing and feedback
+- 🔜 Linux support
+- 📱 Desktop app (Electron)
+- 🎨 UI/UX design
+- 📲 Mobile app (React Native)
 
 See our [ROADMAP](ROADMAP.md) for the full vision.
 
