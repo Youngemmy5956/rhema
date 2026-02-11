@@ -20,14 +20,42 @@ if (OS === 'darwin') {
     const scriptPath = join(HOME, 'rhema-daily.sh');
     const scriptContent = `#!/bin/bash
 
-# Get the daily verse
-VERSE=$(rhema daily)
+# Get the daily verse and remove ANSI color codes
+VERSE_FULL=$(rhema daily | sed 's/\\x1b\\[[0-9;]*m//g')
 
-# Display as notification
-osascript -e "display notification \\"$VERSE\\" with title \\"📖 RHEMA Daily\\" subtitle \\"by Nwamini Emmanuel O.\\" sound name \\"Glass\\""
+# Extract verse text (line with quotes)
+VERSE_TEXT=$(echo "$VERSE_FULL" | grep '^"' | sed 's/^"//;s/"$//')
 
-# Also log it
-echo "$VERSE"
+# Extract reference (line with —) - only get first occurrence
+VERSE_REF=$(echo "$VERSE_FULL" | grep '^—' | head -1 | sed 's/^— //')
+
+# If verse text is empty, use the full output
+if [ -z "$VERSE_TEXT" ]; then
+    VERSE_TEXT="$VERSE_FULL"
+fi
+
+# Create the full message for display
+FULL_MESSAGE="$VERSE_TEXT
+
+— $VERSE_REF"
+
+# 1. FIRST: Send notification
+osascript -e "display notification \\"$VERSE_TEXT\\" with title \\"RHEMA - Daily Reading by Nwamini Emmanuel O.\\" subtitle \\"$VERSE_REF\\" sound name \\"Glass\\""
+
+# 2. THEN: Show the readable popup dialog
+osascript << END
+display dialog "$FULL_MESSAGE" with title "📖 RHEMA - Daily Reading" buttons {"Amen", "Copy Verse"} default button "Amen" with icon note
+set buttonPressed to button returned of result
+
+if buttonPressed is "Copy Verse" then
+    set the clipboard to "$FULL_MESSAGE"
+end if
+END
+
+# Log it
+echo "$(date '+%Y-%m-%d %H:%M:%S')" >> /tmp/rhema-daily.log
+echo "$VERSE_FULL" >> /tmp/rhema-daily.log
+echo "---" >> /tmp/rhema-daily.log
 `;
 
     writeFileSync(scriptPath, scriptContent);
@@ -76,8 +104,13 @@ echo "$VERSE"
     execSync(`launchctl load ${plistPath}`);
 
     console.log('✅ RHEMA Daily successfully set up on macOS!\n');
+    console.log('📖 You will receive a Bible verse at 8:00 AM daily\n');
+    console.log('   🔔 Notification appears with verse preview');
+    console.log('   📖 Popup dialog shows full verse to read');
+    console.log('   ✝️  Click "Amen" to close or "Copy Verse" to copy\n');
   } catch (error) {
     console.error('❌ Setup failed:', error.message);
+    console.log('\n💡 You can still use the CLI commands!');
   }
 }
 
@@ -86,7 +119,7 @@ else if (OS === 'win32') {
   try {
     const taskName = 'RhemaDaily';
     
-    // Copy the notification script
+    // Copy the notification script if it exists
     const notifyScriptSource = join(__dirname, 'windows-notify.ps1');
     const notifyScriptDest = join(HOME, 'rhema-notify.ps1');
     
@@ -103,7 +136,7 @@ $ErrorActionPreference = "Continue"
 # Get the verse
 try {
     $output = rhema daily 2>&1 | Out-String
-    $lines = $output -split "``n"
+    $lines = $output -split "\`n"
     
     # Extract verse and reference
     $verse = ""
@@ -113,7 +146,7 @@ try {
         if ($line -match '^"(.+)"$') {
             $verse = $matches[1]
         }
-        elseif ($line -match '^—\s*(.+)$') {
+        elseif ($line -match '^—\\s*(.+)$') {
             $reference = $matches[1]
         }
     }
@@ -123,7 +156,7 @@ try {
     }
     
     # Call notification script
-    $notifyScript = "$env:USERPROFILE\\rhema-notify.ps1"
+    $notifyScript = "$env:USERPROFILE\\\\rhema-notify.ps1"
     if (Test-Path $notifyScript) {
         & $notifyScript -Verse $verse -Reference $reference
     }
@@ -134,7 +167,7 @@ try {
 }
 catch {
     Write-Host "Error: $_" -ForegroundColor Red
-    $logPath = "$env:TEMP\\rhema-daily-error.log"
+    $logPath = "$env:TEMP\\\\rhema-daily-error.log"
     Add-Content -Path $logPath -Value "$(Get-Date) - Error: $_"
 }
 `;
@@ -197,10 +230,11 @@ catch {
   } catch (error) {
     console.error('❌ Setup failed:', error.message);
     console.log('\n💡 You can still use the CLI commands!');
+    console.log('   Please report Windows issues: https://github.com/Youngemmy5956/rhema/issues/1\n');
   }
 }
 
-// Linux Setup (optional)
+// Linux Setup
 else {
   console.log('⚠️  Linux support coming soon!');
   console.log('   You can still use the CLI commands!\n');
