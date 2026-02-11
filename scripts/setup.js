@@ -104,21 +104,34 @@ echo "---" >> /tmp/rhema-daily.log
     execSync(`launchctl load ${plistPath}`);
 
     console.log('✅ RHEMA Daily successfully set up on macOS!\n');
-    console.log('📖 You will receive a Bible verse at 8:00 AM daily\n');
-    console.log('   🔔 Notification appears with verse preview');
-    console.log('   📖 Popup dialog shows full verse to read');
-    console.log('   ✝️  Click "Amen" to close or "Copy Verse" to copy\n');
-
-    // Show welcome notification
-    console.log('🔔 Showing welcome notification...\n');
+    
+    // Show welcome notification immediately!
     try {
-      execSync(`${scriptPath}`, { stdio: 'inherit' });
-      console.log('\n✅ Welcome notification sent!');
-      console.log('📖 Your next daily verse will appear at 8:00 AM tomorrow\n');
+      const welcomeVerse = execSync('rhema', { encoding: 'utf-8' });
+      const cleanVerse = welcomeVerse.replace(/\x1b\[[0-9;]*m/g, '');
+      const verseLines = cleanVerse.trim().split('\n');
+      const verseText = verseLines[0]?.replace(/^"|"$/g, '') || '';
+      const verseRef = verseLines[1]?.replace(/^— /, '') || '';
+      
+      // Welcome notification
+      execSync(`osascript -e 'display notification "Your daily verse will appear at 8:00 AM every morning!" with title "Welcome to RHEMA! 🙏" subtitle "by Nwamini Emmanuel O." sound name "Glass"'`);
+      
+      // Wait a second, then show sample verse
+      setTimeout(() => {
+        const welcomeMessage = `${verseText}\n\n— ${verseRef}\n\nYour daily verse will appear at 8:00 AM tomorrow! ✝️`;
+        
+        execSync(`osascript -e 'display dialog "${welcomeMessage.replace(/"/g, '\\"')}" with title "📖 RHEMA - Sample Verse" buttons {"Amen"} default button "Amen" with icon note'`);
+      }, 1500);
+      
     } catch (e) {
-      console.log('⚠️  Could not show welcome notification, but setup is complete!\n');
+      console.log('💡 Test it now: rhema daily');
     }
-
+    
+    console.log('\n📖 Daily verses will appear at 8:00 AM\n');
+    console.log('   🔔 Notification with verse preview');
+    console.log('   📖 Popup dialog with full verse to read');
+    console.log('   ✝️  Click "Amen" to close or "Copy Verse" to copy\n');
+    
   } catch (error) {
     console.error('❌ Setup failed:', error.message);
     console.log('\n💡 You can still use the CLI commands!');
@@ -235,20 +248,16 @@ catch {
     execSync(`schtasks /create /tn "${taskName}" /xml "${taskXmlPath}" /f`);
 
     console.log('✅ RHEMA Daily successfully set up on Windows!\n');
-    console.log('📖 You will receive a Bible verse notification at 8:00 AM daily\n');
-
+    
     // Show welcome notification
-    console.log('🔔 Showing welcome notification...\n');
     try {
-      execSync(`powershell -ExecutionPolicy Bypass -File "${scriptPath}"`, { stdio: 'inherit' });
-      console.log('\n✅ Welcome notification sent!');
-      console.log('📖 Your next daily verse will appear at 8:00 AM tomorrow\n');
-    } catch (e) {
-      console.log('⚠️  Could not show welcome notification, but setup is complete!\n');
-      console.log('🧪 To test manually, run:');
-      console.log(`   powershell -ExecutionPolicy Bypass -File "${scriptPath}"\n`);
-    }
-
+      execSync('rhema', { encoding: 'utf-8', stdio: 'ignore' });
+      console.log('🎉 Welcome notification sent!\n');
+    } catch (e) {}
+    
+    console.log('📖 You will receive a Bible verse notification at 8:00 AM daily\n');
+    console.log('\n🧪 To test the notification now, run:');
+    console.log(`   powershell -ExecutionPolicy Bypass -File "${scriptPath}"\n`);
   } catch (error) {
     console.error('❌ Setup failed:', error.message);
     console.log('\n💡 You can still use the CLI commands!');
