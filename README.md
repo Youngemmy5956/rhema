@@ -268,3 +268,15 @@ Give a ⭐️ if this project blessed you!
 ---
 
 <p align="center">Made with ❤️ and ✝️ by Nwamini Emmanuel O.</p>
+
+---
+
+## 🖥️ Desktop App
+
+Prefer a GUI? Check out the **RHEMA Daily Desktop App** built with Electron!
+
+- 🔔 Native notifications at 8:00 AM daily
+- 📚 Multiple Bible versions
+- 🖥️ System tray integration
+- 📥 [Download for macOS](https://github.com/Youngemmy5956/rhema-desktop/releases/latest)
+- 🔗 [View Repository](https://github.com/Youngemmy5956/rhema-desktop)
