@@ -6,54 +6,74 @@ Bring daily biblical inspiration to everyone, everywhere, regardless of technica
 ---
 
 ## ✅ Phase 1: CLI Foundation (Complete)
-
 - [x] Command-line tool
 - [x] Daily verse selection
 - [x] Bible verse fetching
 - [x] macOS notifications
 - [x] npm package published
+- [x] Welcome notification on install
+- [x] Popup dialog with "Amen" / "Copy Verse" buttons
 
 ---
 
-## 🚧 Phase 2: Cross-Platform CLI (Q1 2026)
-
+## ✅ Phase 2: Cross-Platform CLI (Complete)
 **Windows Support:**
-- [ ] Windows Task Scheduler integration
-- [ ] Windows 10/11 toast notifications
-- [ ] PowerShell script
-- [ ] Installer (.msi or .exe)
+- [x] Windows Task Scheduler integration
+- [x] Windows 10/11 toast notifications
+- [x] PowerShell notification script
+- [x] Welcome notification on install
 
-**Linux Support:**
-- [ ] Cron job setup
-- [ ] Desktop notifications (notify-send)
+**Still Needed:**
+- [ ] Linux support (cron job + notify-send)
 - [ ] .deb package
 - [ ] AppImage
 
 ---
 
-## 📱 Phase 3: Desktop App (Q2 2026)
-
+## ✅ Phase 3: Desktop App (Complete - v1.0.0)
 **Electron Application:**
-- [ ] System tray widget
-- [ ] Settings panel
-  - [ ] Notification time
-  - [ ] Bible version selection
-  - [ ] Theme (light/dark)
-- [ ] Visual verse display
-- [ ] Verse history
-- [ ] Copy/share functionality
-- [ ] Auto-launch on startup
-- [ ] Cross-platform (Windows, macOS, Linux)
+- [x] System tray widget
+- [x] Bible version selection (KJV, ASV, WEB)
+- [x] Visual verse display
+- [x] Copy verse functionality
+- [x] Daily notification at 8AM
+- [x] Live API - access to entire Bible
+- [x] Welcome notification on launch
+- [x] Cross-platform (Windows, macOS)
 
 **Installers:**
-- [ ] macOS .dmg
-- [ ] Windows .exe installer
+- [x] macOS .dmg (Apple Silicon)
+- [x] Windows .exe installer
+- [x] Windows portable .exe
+
+**Still Needed:**
+- [ ] macOS Intel build
+- [ ] Linux AppImage / .deb
+- [ ] Settings panel (custom notification time)
+- [ ] Light/dark mode toggle
+- [ ] Verse history
+- [ ] Auto-launch on startup
+- [ ] Search specific verse (e.g. John 3:16)
+- [ ] Read full chapter view
+
+---
+
+## 🚧 Phase 4: Desktop App v2.0 (Q1-Q2 2026)
+**Enhanced Features:**
+- [ ] Custom notification time (not just 8AM)
+- [ ] Favourite/bookmark verses
+- [ ] Verse history log
+- [ ] Share verse via social media
+- [ ] Dark/light mode toggle
+- [ ] Search specific verse
+- [ ] Read full chapter view
+- [ ] Auto-launch on startup
+- [ ] macOS Intel build
 - [ ] Linux AppImage / .deb
 
 ---
 
-## 📲 Phase 4: Mobile App (Q3-Q4 2026)
-
+## 📲 Phase 5: Mobile App (Q3-Q4 2026)
 **React Native Application:**
 - [ ] iOS app
 - [ ] Android app
@@ -69,8 +89,7 @@ Bring daily biblical inspiration to everyone, everywhere, regardless of technica
 
 ---
 
-## 🌟 Phase 5: Enhanced Features (2027+)
-
+## 🌟 Phase 6: Enhanced Features (2027+)
 **Community Features:**
 - [ ] Verse of the day community voting
 - [ ] User-created collections
@@ -97,15 +116,15 @@ Bring daily biblical inspiration to everyone, everywhere, regardless of technica
 See [CONTRIBUTING.md](CONTRIBUTING.md) for details!
 
 **Immediate Needs:**
-1. Windows testing and development
-2. Electron app development
-3. UI/UX design
-4. Icon and branding design
+1. Windows testing and feedback
+2. Linux support development
+3. Desktop app v2.0 features
+4. UI/UX design improvements
+5. Mobile app development
 
 ---
 
 ## 📊 Success Metrics
-
 - [ ] 1,000 npm downloads
 - [ ] 10,000 npm downloads
 - [ ] 100,000 npm downloads
@@ -119,4 +138,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for details!
 
 *This roadmap is subject to change based on community feedback and contribution.*
 
-Last updated: February 10, 2026
+Last updated: February 12, 2026
