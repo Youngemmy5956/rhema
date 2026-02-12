@@ -21,28 +21,40 @@ if (OS === 'darwin') {
     const scriptContent = `#!/bin/bash
 
 # Get the daily verse and remove ANSI color codes
-VERSE_FULL=$(rhema daily | sed 's/\\x1b\\[[0-9;]*m//g')
+VERSE_OUTPUT=$(rhema daily 2>&1)
 
-# Extract verse text (line with quotes)
-VERSE_TEXT=$(echo "$VERSE_FULL" | grep '^"' | sed 's/^"//;s/"$//')
+# Remove color codes
+VERSE_CLEAN=$(echo "$VERSE_OUTPUT" | sed 's/\\x1b\\[[0-9;]*m//g')
 
-# Extract reference (line with —) - only get first occurrence
-VERSE_REF=$(echo "$VERSE_FULL" | grep '^—' | head -1 | sed 's/^— //')
+# Extract verse text (line with quotes) - more robust extraction
+VERSE_TEXT=$(echo "$VERSE_CLEAN" | grep -o '".*"' | sed 's/^"//;s/"$//' | head -1)
 
-# If verse text is empty, use the full output
+# Extract reference (line starting with —)
+VERSE_REF=$(echo "$VERSE_CLEAN" | grep '^—' | head -1 | sed 's/^— //')
+
+# Debug: log what we got
+echo "$(date '+%Y-%m-%d %H:%M:%S')" >> /tmp/rhema-debug.log
+echo "Raw output: $VERSE_OUTPUT" >> /tmp/rhema-debug.log
+echo "Clean: $VERSE_CLEAN" >> /tmp/rhema-debug.log
+echo "Text: $VERSE_TEXT" >> /tmp/rhema-debug.log
+echo "Ref: $VERSE_REF" >> /tmp/rhema-debug.log
+echo "---" >> /tmp/rhema-debug.log
+
+# Fallback if extraction failed
 if [ -z "$VERSE_TEXT" ]; then
-    VERSE_TEXT="$VERSE_FULL"
+    VERSE_TEXT="Check the RHEMA app for today's verse"
+    VERSE_REF="Daily Reading"
 fi
 
-# Create the full message for display
+# Create full message
 FULL_MESSAGE="$VERSE_TEXT
 
 — $VERSE_REF"
 
-# 1. FIRST: Send notification
+# 1. Send notification
 osascript -e "display notification \\"$VERSE_TEXT\\" with title \\"RHEMA - Daily Reading by Nwamini Emmanuel O.\\" subtitle \\"$VERSE_REF\\" sound name \\"Glass\\""
 
-# 2. THEN: Show the readable popup dialog
+# 2. Show popup dialog
 osascript << END
 display dialog "$FULL_MESSAGE" with title "📖 RHEMA - Daily Reading" buttons {"Amen", "Copy Verse"} default button "Amen" with icon note
 set buttonPressed to button returned of result
@@ -54,7 +66,7 @@ END
 
 # Log it
 echo "$(date '+%Y-%m-%d %H:%M:%S')" >> /tmp/rhema-daily.log
-echo "$VERSE_FULL" >> /tmp/rhema-daily.log
+echo "$VERSE_CLEAN" >> /tmp/rhema-daily.log
 echo "---" >> /tmp/rhema-daily.log
 `;
 
@@ -105,14 +117,15 @@ echo "---" >> /tmp/rhema-daily.log
 
     console.log('✅ RHEMA Daily successfully set up on macOS!\n');
     
-    // Show welcome notification using spawn (non-blocking)
+    // Show welcome notification
     const welcomeScript = `#!/bin/bash
 sleep 1
 osascript -e 'display notification "Your daily verse will appear at 8:00 AM every morning! ✝️" with title "Welcome to RHEMA! 🙏" subtitle "by Nwamini Emmanuel O." sound name "Glass"'
 sleep 2
-VERSE=$(rhema | sed 's/\\x1b\\[[0-9;]*m//g')
-VERSE_TEXT=$(echo "$VERSE" | head -1 | sed 's/^"//;s/"$//')
-VERSE_REF=$(echo "$VERSE" | tail -1 | sed 's/^— //')
+VERSE_OUT=$(rhema 2>&1)
+VERSE_CLEAN=$(echo "$VERSE_OUT" | sed 's/\\x1b\\[[0-9;]*m//g')
+VERSE_TEXT=$(echo "$VERSE_CLEAN" | grep -o '".*"' | sed 's/^"//;s/"$//' | head -1)
+VERSE_REF=$(echo "$VERSE_CLEAN" | grep '^—' | head -1 | sed 's/^— //')
 osascript -e "display dialog \\"Sample Verse:\\n\\n$VERSE_TEXT\\n\\n— $VERSE_REF\\n\\nYour daily verse will appear at 8:00 AM tomorrow! ✝️\\" with title \\"📖 RHEMA\\" buttons {\\"Amen\\"} default button \\"Amen\\" with icon note"
 `;
     
@@ -120,7 +133,6 @@ osascript -e "display dialog \\"Sample Verse:\\n\\n$VERSE_TEXT\\n\\n— $VERSE_R
     writeFileSync(welcomeScriptPath, welcomeScript);
     execSync(`chmod +x ${welcomeScriptPath}`);
     
-    // Spawn in background without blocking
     spawn(welcomeScriptPath, [], {
       detached: true,
       stdio: 'ignore'
@@ -133,7 +145,7 @@ osascript -e "display dialog \\"Sample Verse:\\n\\n$VERSE_TEXT\\n\\n— $VERSE_R
     
   } catch (error) {
     console.error('❌ Setup failed:', error.message);
-    console.log('\n💡 You can still use the CLI commands!');
+    console.log('\n�� You can still use the CLI commands!');
   }
 }
 
@@ -241,7 +253,7 @@ catch {
 
     console.log('✅ RHEMA Daily successfully set up on Windows!\n');
     console.log('📖 You will receive a Bible verse notification at 8:00 AM daily\n');
-    console.log('\n🧪 To test the notification now, run:');
+    console.log('\n�� To test the notification now, run:');
     console.log(`   powershell -ExecutionPolicy Bypass -File "${scriptPath}"\n`);
   } catch (error) {
     console.error('❌ Setup failed:', error.message);
