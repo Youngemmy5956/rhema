@@ -1,6 +1,6 @@
-# 📖 RHEMA - Daily Bible Verse
+# 📖 RHEMA - Bible Verse Reminders
 
-> Get inspired every morning with a Bible verse notification on your Mac and Windows!
+> Get inspired throughout the day with Bible verse notifications every 2 minutes on your Mac and Windows!
 
 [![npm version](https://img.shields.io/npm/v/rhema-daily.svg)](https://www.npmjs.com/package/rhema-daily)
 [![npm downloads](https://img.shields.io/npm/dm/rhema-daily.svg)](https://www.npmjs.com/package/rhema-daily)
@@ -11,13 +11,13 @@ Created by **Nwamini Emmanuel O.** | [GitHub](https://github.com/Youngemmy5956)
 
 ---
 
-## �� What is RHEMA?
+## 💡 What is RHEMA?
 
 **RHEMA** (ῥῆμα) is a Greek word meaning **"a spoken word"** or **"utterance"**. In biblical context, it refers to a specific word from God that speaks directly to you in a particular moment - a timely, personal message that brings life and revelation.
 
 > *"Man shall not live by bread alone, but by every **word (rhema)** that proceeds from the mouth of God."* — Matthew 4:4
 
-This tool delivers God's **rhema** to you daily - a fresh word to guide, encourage, and inspire your day.
+This tool delivers God's **rhema** to you **every 2 minutes** - constant reminders of His Word throughout your day.
 
 ---
 
@@ -27,8 +27,8 @@ This tool delivers God's **rhema** to you daily - a fresh word to guide, encoura
 |---|---|---|
 | **Install** | `npm install -g rhema-daily` | [Download .dmg / .exe](https://github.com/Youngemmy5956/rhema-desktop/releases/latest) |
 | **Platform** | macOS, Windows | macOS, Windows |
-| **Notifications** | ✅ Daily at 8AM | ✅ Daily at 8AM |
-| **GUI** | ❌ Terminal only | ✅ Beautiful UI |
+| **Notifications** | ✅ Every 2 minutes | ✅ Customizable (every 2 min, daily, custom) |
+| **GUI** | ❌ Terminal only | ✅ Beautiful UI with settings |
 | **Bible versions** | KJV | KJV, ASV, WEB |
 | **Tray icon** | ❌ | ✅ |
 | **Repo** | [rhema](https://github.com/Youngemmy5956/rhema) | [rhema-desktop](https://github.com/Youngemmy5956/rhema-desktop) |
@@ -40,7 +40,7 @@ This tool delivers God's **rhema** to you daily - a fresh word to guide, encoura
 npm install -g rhema-daily
 ```
 
-That's it! Daily Bible verse notifications are automatically set up! 🎉
+That's it! Bible verse notifications will appear **every 2 minutes** to keep you focused on God's Word! 🎉
 
 ### Platform Support
 
@@ -74,13 +74,14 @@ rhema fetch "1 Corinthians" 13:4
 
 ## ✨ Features
 
-- 🔔 **Daily Notifications** - Receive your rhema at 8:00 AM every day
-- 📖 **Random Scripture** - Both Old and New Testament
+- 🔔 **Constant Reminders** - New Bible verse every 2 minutes
+- 📖 **Random Scripture** - Fresh verses from Old and New Testament
 - 💻 **CLI Tool** - Fetch verses anytime from your terminal
 - ⚡ **Auto-start** - Runs automatically even after restarts
 - 🎯 **Filtered Verses** - Choose OT, NT, or Red Letter (Jesus's words)
 - 🏷️ **Mood-based** - Filter verses by themes (peace, comfort, rest, etc.)
 - 🎉 **Welcome Experience** - Sample verse on first install
+- ✝️ **Stay Focused** - Constant reminders of God's Word throughout your day
 
 ---
 
@@ -91,11 +92,11 @@ rhema fetch "1 Corinthians" 13:4
 **On Installation:**
 1. 🔔 Welcome notification
 2. 📖 Sample verse popup
-3. Message: "Your daily verse will appear at 8:00 AM tomorrow!"
+3. Message: "You will receive a Bible verse every 2 minutes!"
 
-**Every Morning at 8 AM:**
-1. 🔔 Notification with verse preview
-2. �� Full verse popup dialog
+**Every 2 Minutes:**
+1. �� Notification with verse preview
+2. 📖 Full verse popup dialog
 3. Two buttons: "Amen" or "Copy Verse"
 
 ### Windows Experience
@@ -104,47 +105,34 @@ rhema fetch "1 Corinthians" 13:4
 1. ✅ Task Scheduler setup
 2. PowerShell notification script created
 
-**Every Morning at 8 AM:**
+**Every 2 Minutes:**
 1. 🔔 Windows toast notification with verse
 2. Logged to `%TEMP%\rhema-daily.log`
 
 ---
 
-## 🎯 Examples
-
-**Command Line:**
-```bash
-$ rhema
-"For God so loved the world that he gave his one and only Son,
-that whoever believes in him shall not perish but have eternal life."
-— John 3:16
-```
-
-**Jesus's Words:**
-```bash
-$ rhema red
-Jesus said 🔴
-"I am the way, the truth, and the life.
-No one comes to the Father except through me."
-— John 14:6
-```
-
----
-
 ## ⚙️ Configuration
 
-### macOS - Change Notification Time
+### macOS - Change Notification Interval
 
 Edit the plist file:
 ```bash
 nano ~/Library/LaunchAgents/com.rhema.daily.plist
 ```
 
-Change the `Hour` value (0-23):
+Change the `StartInterval` value (in seconds):
 ```xml
-<key>Hour</key>
-<integer>8</integer>
+<key>StartInterval</key>
+<integer>120</integer>  <!-- 120 seconds = 2 minutes -->
 ```
+
+**Common intervals:**
+- Every minute: `60`
+- Every 2 minutes: `120` (default)
+- Every 5 minutes: `300`
+- Every 10 minutes: `600`
+- Every 30 minutes: `1800`
+- Every hour: `3600`
 
 Reload the service:
 ```bash
@@ -152,14 +140,14 @@ launchctl unload ~/Library/LaunchAgents/com.rhema.daily.plist
 launchctl load ~/Library/LaunchAgents/com.rhema.daily.plist
 ```
 
-### Windows - Change Notification Time
+### Windows - Change Notification Interval
 
 Open Task Scheduler:
 ```powershell
 taskschd.msc
 ```
 
-Find "RhemaDaily" → Right-click → Properties → Triggers → Edit
+Find "RhemaDaily" → Right-click → Properties → Triggers → Edit → Repeat task every: **2 minutes**
 
 ---
 
@@ -210,15 +198,29 @@ del $env:USERPROFILE\rhema-notify.ps1
 
 ---
 
+## 💡 Why Every 2 Minutes?
+
+> *"I have hidden your word in my heart that I might not sin against you."* — Psalm 119:11
+
+Constant exposure to God's Word throughout the day:
+- ✝️ Keeps you focused on spiritual things
+- 📖 Helps memorize Scripture naturally
+- 🙏 Reminds you to pray and meditate
+- 💪 Strengthens your faith continuously
+- ❤️ Transforms your mind through repetition
+
+**Want less frequent reminders?** Use the [Desktop App](https://github.com/Youngemmy5956/rhema-desktop) with customizable settings!
+
+---
+
 ## 🧪 Help Test Windows Support!
 
 Windows support is **working but needs more testing**! If you're on Windows:
 
 1. Install: `npm install -g rhema-daily`
 2. Test the CLI: `rhema daily`
-3. Check if scheduled task was created
-4. Test notifications
-5. [Report your experience here](../../issues/1)
+3. Check if notifications appear every 2 minutes
+4. [Report your experience here](../../issues/1)
 
 Your feedback helps make RHEMA better for everyone! 🙏
 
@@ -247,6 +249,7 @@ This project is [MIT](LICENSE) licensed.
 ## 👨‍💻 Author
 
 **Nwamini Emmanuel O.**
+
 - GitHub: [@Youngemmy5956](https://github.com/Youngemmy5956)
 - npm: [rhema-daily](https://www.npmjs.com/package/rhema-daily)
 
@@ -260,8 +263,11 @@ Give a ⭐️ if this project blessed you!
 
 ## 📖 Scripture
 
-> *"Your word is a lamp to my feet and a light to my path."*
+> *"Your word is a lamp to my feet and a light to my path."*  
 > — Psalm 119:105
+
+> *"This Book of the Law shall not depart from your mouth, but you shall meditate on it day and night."*  
+> — Joshua 1:8
 
 ---
 
