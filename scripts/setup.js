@@ -20,8 +20,11 @@ if (OS === 'darwin') {
     const scriptPath = join(HOME, 'rhema-daily.sh');
     const scriptContent = `#!/bin/bash
 
-# Get a random verse (not daily, so it changes each time)
-VERSE_OUTPUT=$(rhema 2>&1)
+# Delete the daily cache so we get a NEW verse each time
+rm -f ~/.rhema_daily.json
+
+# Get verse
+VERSE_OUTPUT=$(rhema daily 2>&1)
 
 # Remove color codes
 VERSE_CLEAN=$(echo "$VERSE_OUTPUT" | sed 's/\\x1b\\[[0-9;]*m//g')
@@ -32,31 +35,26 @@ VERSE_TEXT=$(echo "$VERSE_CLEAN" | grep -o '".*"' | sed 's/^"//;s/"$//' | head -
 # Extract reference
 VERSE_REF=$(echo "$VERSE_CLEAN" | grep '^—' | head -1 | sed 's/^— //')
 
-# Fallback if extraction failed
+# Fallback
 if [ -z "$VERSE_TEXT" ]; then
     VERSE_TEXT="The Word of God is alive and active"
     VERSE_REF="Hebrews 4:12"
 fi
 
-# Create full message
 FULL_MESSAGE="$VERSE_TEXT
 
 — $VERSE_REF"
 
-# 1. Send notification
 osascript -e "display notification \\"$VERSE_TEXT\\" with title \\"RHEMA - Word of God by Nwamini Emmanuel O.\\" subtitle \\"$VERSE_REF\\" sound name \\"Glass\\""
 
-# 2. Show popup dialog
 osascript << END
 display dialog "$FULL_MESSAGE" with title "📖 RHEMA - God's Word" buttons {"Amen", "Copy Verse"} default button "Amen" with icon note
 set buttonPressed to button returned of result
-
 if buttonPressed is "Copy Verse" then
     set the clipboard to "$FULL_MESSAGE"
 end if
 END
 
-# Log it
 echo "$(date '+%Y-%m-%d %H:%M:%S')" >> /tmp/rhema-daily.log
 echo "$VERSE_CLEAN" >> /tmp/rhema-daily.log
 echo "---" >> /tmp/rhema-daily.log
@@ -102,22 +100,22 @@ echo "---" >> /tmp/rhema-daily.log
     
     execSync(`launchctl load ${plistPath}`);
 
-    console.log('✅ RHEMA Daily successfully set up on macOS!\n');
-    console.log('📖 You will receive a Bible verse every 2 minutes!\n');
+    console.log('✅ RHEMA successfully set up on macOS!\n');
+    console.log('📖 You will receive a NEW Bible verse every 2 minutes!\n');
     console.log('   🔔 Notification with verse preview');
-    console.log('   📖 Popup dialog with full verse to read');
-    console.log('   ✝️  A constant reminder of God\'s Word!\n');
+    console.log('   📖 Popup dialog with full verse');
+    console.log('   ✝️  Constant reminders of God\'s Word!\n');
     
-    // Show welcome notification
     const welcomeScript = `#!/bin/bash
 sleep 1
-osascript -e 'display notification "You will receive a Bible verse every 2 minutes! ✝️" with title "Welcome to RHEMA! 🙏" subtitle "by Nwamini Emmanuel O." sound name "Glass"'
+osascript -e 'display notification "You will receive a NEW Bible verse every 2 minutes! ✝️" with title "Welcome to RHEMA! 🙏" subtitle "by Nwamini Emmanuel O." sound name "Glass"'
 sleep 2
-VERSE_OUT=$(rhema 2>&1)
+rm -f ~/.rhema_daily.json
+VERSE_OUT=$(rhema daily 2>&1)
 VERSE_CLEAN=$(echo "$VERSE_OUT" | sed 's/\\x1b\\[[0-9;]*m//g')
 VERSE_TEXT=$(echo "$VERSE_CLEAN" | grep -o '".*"' | sed 's/^"//;s/"$//' | head -1)
 VERSE_REF=$(echo "$VERSE_CLEAN" | grep '^—' | head -1 | sed 's/^— //')
-osascript -e "display dialog \\"Sample Verse:\\n\\n$VERSE_TEXT\\n\\n— $VERSE_REF\\n\\nA new verse every 2 minutes! ✝️\\" with title \\"📖 RHEMA\\" buttons {\\"Amen\\"} default button \\"Amen\\" with icon note"
+osascript -e "display dialog \\"Sample Verse:\\n\\n$VERSE_TEXT\\n\\n— $VERSE_REF\\n\\nA NEW verse every 2 minutes! ✝️\\" with title \\"📖 RHEMA\\" buttons {\\"Amen\\"} default button \\"Amen\\" with icon note"
 `;
     
     const welcomeScriptPath = '/tmp/rhema-welcome.sh';
@@ -149,11 +147,15 @@ else if (OS === 'win32') {
     }
     
     const scriptPath = join(HOME, 'rhema-daily.ps1');
-    const psScript = `# RHEMA - Windows (Every 2 minutes)
+    const psScript = `# RHEMA - Windows (Every 2 minutes, NEW verse each time)
 $ErrorActionPreference = "Continue"
 
 try {
-    $output = rhema 2>&1 | Out-String
+    # Delete cache to get a new verse
+    $cacheFile = "$env:USERPROFILE\\.rhema_daily.json"
+    if (Test-Path $cacheFile) { Remove-Item $cacheFile }
+    
+    $output = rhema daily 2>&1 | Out-String
     $lines = $output -split "\`n"
     
     $verse = ""
@@ -177,7 +179,7 @@ try {
         & $notifyScript -Verse $verse -Reference $reference
     }
     else {
-        Write-Host "📖 $verse" -ForegroundColor Cyan
+        Write-Host "�� $verse" -ForegroundColor Cyan
         Write-Host "— $reference" -ForegroundColor Gray
     }
 }
@@ -190,7 +192,6 @@ catch {
 
     writeFileSync(scriptPath, psScript, 'utf-8');
 
-    // Windows Task Scheduler for every 2 minutes
     const taskXml = `<?xml version="1.0" encoding="UTF-16"?>
 <Task version="1.4" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
   <RegistrationInfo>
@@ -240,13 +241,13 @@ catch {
     execSync(`schtasks /create /tn "${taskName}" /xml "${taskXmlPath}" /f`);
 
     console.log('✅ RHEMA successfully set up on Windows!\n');
-    console.log('📖 You will receive a Bible verse every 2 minutes!\n');
-    console.log('\n🧪 To test the notification now, run:');
+    console.log('📖 You will receive a NEW Bible verse every 2 minutes!\n');
+    console.log('\n🧪 To test now:');
     console.log(`   powershell -ExecutionPolicy Bypass -File "${scriptPath}"\n`);
   } catch (error) {
     console.error('❌ Setup failed:', error.message);
-    console.log('\n�� You can still use the CLI commands!');
-    console.log('   Please report Windows issues: https://github.com/Youngemmy5956/rhema/issues/1\n');
+    console.log('\n💡 You can still use the CLI commands!');
+    console.log('   Report issues: https://github.com/Youngemmy5956/rhema/issues/1\n');
   }
 }
 
