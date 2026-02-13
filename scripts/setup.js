@@ -17,35 +17,60 @@ console.log('\n📖 Setting up RHEMA Daily Bible Verse...\n');
 // macOS Setup
 if (OS === 'darwin') {
   try {
+    // Find rhema path
+    let rhemaPath = '';
+    try {
+      rhemaPath = execSync('which rhema', { encoding: 'utf-8' }).trim();
+    } catch (e) {
+      // Try common locations
+      const possiblePaths = [
+        '/usr/local/bin/rhema',
+        join(HOME, '.npm-global/bin/rhema'),
+        join(HOME, '.nvm/versions/node/*/bin/rhema')
+      ];
+      for (const p of possiblePaths) {
+        if (existsSync(p)) {
+          rhemaPath = p;
+          break;
+        }
+      }
+    }
+
+    if (!rhemaPath) {
+      throw new Error('Could not find rhema command');
+    }
+
     const scriptPath = join(HOME, 'rhema-daily.sh');
     const scriptContent = `#!/bin/bash
 
-# Delete the daily cache so we get a NEW verse each time
-rm -f ~/.rhema_daily.json
+RHEMA_CMD="${rhemaPath}"
 
-# Get verse
-VERSE_OUTPUT=$(rhema daily 2>&1)
+# Alternate between OT and NT for variety
+RAND=$((RANDOM % 2))
 
-# Remove color codes
+if [ $RAND -eq 0 ]; then
+    # Old Testament (always random)
+    VERSE_OUTPUT=$($RHEMA_CMD ot 2>&1)
+else
+    # New Testament (delete cache first)
+    rm -f ~/.rhema_daily.json
+    VERSE_OUTPUT=$($RHEMA_CMD daily 2>&1)
+fi
+
 VERSE_CLEAN=$(echo "$VERSE_OUTPUT" | sed 's/\\x1b\\[[0-9;]*m//g')
-
-# Extract verse text
 VERSE_TEXT=$(echo "$VERSE_CLEAN" | grep -o '".*"' | sed 's/^"//;s/"$//' | head -1)
-
-# Extract reference
 VERSE_REF=$(echo "$VERSE_CLEAN" | grep '^—' | head -1 | sed 's/^— //')
 
-# Fallback
 if [ -z "$VERSE_TEXT" ]; then
-    VERSE_TEXT="The Word of God is alive and active"
-    VERSE_REF="Hebrews 4:12"
+    VERSE_TEXT="Your word is a lamp to my feet"
+    VERSE_REF="Psalm 119:105"
 fi
 
 FULL_MESSAGE="$VERSE_TEXT
 
 — $VERSE_REF"
 
-osascript -e "display notification \\"$VERSE_TEXT\\" with title \\"RHEMA - Word of God by Nwamini Emmanuel O.\\" subtitle \\"$VERSE_REF\\" sound name \\"Glass\\""
+osascript -e "display notification \\"$VERSE_TEXT\\" with title \\"RHEMA by Nwamini Emmanuel O.\\" subtitle \\"$VERSE_REF\\" sound name \\"Glass\\""
 
 osascript << END
 display dialog "$FULL_MESSAGE" with title "📖 RHEMA - God's Word" buttons {"Amen", "Copy Verse"} default button "Amen" with icon note
@@ -54,10 +79,6 @@ if buttonPressed is "Copy Verse" then
     set the clipboard to "$FULL_MESSAGE"
 end if
 END
-
-echo "$(date '+%Y-%m-%d %H:%M:%S')" >> /tmp/rhema-daily.log
-echo "$VERSE_CLEAN" >> /tmp/rhema-daily.log
-echo "---" >> /tmp/rhema-daily.log
 `;
 
     writeFileSync(scriptPath, scriptContent);
@@ -102,30 +123,9 @@ echo "---" >> /tmp/rhema-daily.log
 
     console.log('✅ RHEMA successfully set up on macOS!\n');
     console.log('📖 You will receive a NEW Bible verse every 2 minutes!\n');
-    console.log('   🔔 Notification with verse preview');
+    console.log('   🔔 Different verses from Old and New Testament');
     console.log('   📖 Popup dialog with full verse');
     console.log('   ✝️  Constant reminders of God\'s Word!\n');
-    
-    const welcomeScript = `#!/bin/bash
-sleep 1
-osascript -e 'display notification "You will receive a NEW Bible verse every 2 minutes! ✝️" with title "Welcome to RHEMA! 🙏" subtitle "by Nwamini Emmanuel O." sound name "Glass"'
-sleep 2
-rm -f ~/.rhema_daily.json
-VERSE_OUT=$(rhema daily 2>&1)
-VERSE_CLEAN=$(echo "$VERSE_OUT" | sed 's/\\x1b\\[[0-9;]*m//g')
-VERSE_TEXT=$(echo "$VERSE_CLEAN" | grep -o '".*"' | sed 's/^"//;s/"$//' | head -1)
-VERSE_REF=$(echo "$VERSE_CLEAN" | grep '^—' | head -1 | sed 's/^— //')
-osascript -e "display dialog \\"Sample Verse:\\n\\n$VERSE_TEXT\\n\\n— $VERSE_REF\\n\\nA NEW verse every 2 minutes! ✝️\\" with title \\"📖 RHEMA\\" buttons {\\"Amen\\"} default button \\"Amen\\" with icon note"
-`;
-    
-    const welcomeScriptPath = '/tmp/rhema-welcome.sh';
-    writeFileSync(welcomeScriptPath, welcomeScript);
-    execSync(`chmod +x ${welcomeScriptPath}`);
-    
-    spawn(welcomeScriptPath, [], {
-      detached: true,
-      stdio: 'ignore'
-    }).unref();
     
   } catch (error) {
     console.error('❌ Setup failed:', error.message);
@@ -151,13 +151,18 @@ else if (OS === 'win32') {
 $ErrorActionPreference = "Continue"
 
 try {
-    # Delete cache to get a new verse
-    $cacheFile = "$env:USERPROFILE\\.rhema_daily.json"
-    if (Test-Path $cacheFile) { Remove-Item $cacheFile }
+    # Alternate between OT and NT
+    $rand = Get-Random -Minimum 0 -Maximum 2
     
-    $output = rhema daily 2>&1 | Out-String
+    if ($rand -eq 0) {
+        $output = rhema ot 2>&1 | Out-String
+    } else {
+        $cacheFile = "$env:USERPROFILE\\.rhema_daily.json"
+        if (Test-Path $cacheFile) { Remove-Item $cacheFile }
+        $output = rhema daily 2>&1 | Out-String
+    }
+    
     $lines = $output -split "\`n"
-    
     $verse = ""
     $reference = ""
     
@@ -179,14 +184,12 @@ try {
         & $notifyScript -Verse $verse -Reference $reference
     }
     else {
-        Write-Host "�� $verse" -ForegroundColor Cyan
+        Write-Host "📖 $verse" -ForegroundColor Cyan
         Write-Host "— $reference" -ForegroundColor Gray
     }
 }
 catch {
     Write-Host "Error: $_" -ForegroundColor Red
-    $logPath = "$env:TEMP\\\\rhema-daily-error.log"
-    Add-Content -Path $logPath -Value "$(Get-Date) - Error: $_"
 }
 `;
 
@@ -242,12 +245,9 @@ catch {
 
     console.log('✅ RHEMA successfully set up on Windows!\n');
     console.log('📖 You will receive a NEW Bible verse every 2 minutes!\n');
-    console.log('\n🧪 To test now:');
-    console.log(`   powershell -ExecutionPolicy Bypass -File "${scriptPath}"\n`);
   } catch (error) {
     console.error('❌ Setup failed:', error.message);
     console.log('\n💡 You can still use the CLI commands!');
-    console.log('   Report issues: https://github.com/Youngemmy5956/rhema/issues/1\n');
   }
 }
 

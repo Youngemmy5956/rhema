@@ -42,8 +42,5 @@
   "os": [
     "darwin",
     "win32"
-  ],
-  "dependencies": {
-    "rhema-daily": "^1.6.4"
-  }
+  ]
 }
